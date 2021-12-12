@@ -21,6 +21,7 @@ class Application(tk.Tk):
 
 
 
+
         self.lblR = tk.Label(self, text="R")
         self.lblR.pack()
         self.scaleR = Scale(self, from_=0, to=255, orient = HORIZONTAL, length= 200, command=self.change)
