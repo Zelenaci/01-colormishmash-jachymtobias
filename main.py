@@ -17,6 +17,10 @@ class Application(tk.Tk):
 
         self.bind("<Escape>", self.quit) #klavesa esc spustí quit
 
+
+
+
+
         self.lblR = tk.Label(self, text="R")
         self.lblR.pack()
         self.scaleR = Scale(self, from_=0, to=255, orient = HORIZONTAL, length= 200, command=self.change)
@@ -24,13 +28,17 @@ class Application(tk.Tk):
 
         self.lblG = tk.Label(self, text="G")
         self.lblG.pack()
-        self.scaleG = Scale(self, from_=0, to=255, orient = HORIZONTAL, length= 200)
+        self.scaleG = Scale(self, from_=0, to=255, orient = HORIZONTAL, length= 200, command=self.change)
         self.scaleG.pack()
 
         self.lblB = tk.Label(self, text="B")
         self.lblB.pack()
-        self.scaleB = Scale(self, from_=0, to=255, orient = HORIZONTAL, length= 200)
+        self.scaleB = Scale(self, from_=0, to=255, orient = HORIZONTAL, length= 200, command=self.change)
         self.scaleB.pack()
+
+
+
+
 
         self.canvasMain = Canvas(self, width=200, height=100, background= "#000000")
         self.canvasMain.pack()
