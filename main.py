@@ -2,7 +2,7 @@
 
 from os.path import basename, splitext
 import tkinter as tk
-from tkinter import Scale, HORIZONTAL, Canvas, LEFT, Frame, Entry, S, END
+from tkinter import Scale, HORIZONTAL, Canvas, LEFT, Frame, Entry, S, END, StringVar
 # from tkinter import ttk
 
 
@@ -23,34 +23,46 @@ class Application(tk.Tk):
         self.frameB = Frame(self)
         self.frameB.pack()
 #r
+
+        self.varR = StringVar()
+        self.varR.trace("w", self.change)
         self.lblR = tk.Label(self.frameR, text="R:")
         self.lblR.pack(side = LEFT, anchor = S)
         self.scaleR = Scale(self.frameR, from_=0, to=255,
-                            orient=HORIZONTAL, length=200, command=self.change)
-        self.scaleR.pack(side=LEFT)
-        self.entryR = Entry(self.frameR)
-        self.entryR.pack(side=LEFT)
+                            orient=HORIZONTAL, length=200, variable=self.varR)
+        self.scaleR.pack(side=LEFT, anchor = S)
+        self.entryR = Entry(self.frameR, width=4, textvariable=self.varR)
+        self.entryR.pack(side=LEFT, anchor = S)
 #g
 
+        self.varG = StringVar()
+        self.varG.trace("w", self.change)
         self.lblG = tk.Label(self.frameG, text="G:")
         self.lblG.pack(side = LEFT, anchor = S)
-        self.scaleG = Scale(self, from_=0, to=255,
-                            orient=HORIZONTAL, length=200, command=self.change)
-        self.scaleG.pack(side=LEFT)
-        self.entryG = Entry(self.frameG)
-        self.entryG.pack(side=LEFT)
+        self.scaleG = Scale(self.frameG, from_=0, to=255,
+                            orient=HORIZONTAL, length=200, variable=self.varG)
+        self.scaleG.pack(side=LEFT, anchor = S)
+        self.entryG = Entry(self.frameG, width=4, textvariable=self.varG)
+        self.entryG.pack(side=LEFT, anchor = S)
 #b
+
+        self.varB = StringVar()
+        self.varB.trace("w", self.change)
         self.lblB = tk.Label(self.frameB, text="B:")
         self.lblB.pack(side = LEFT, anchor = S)
-        self.scaleB = Scale(self, from_=0, to=255, orient=HORIZONTAL, length=200, command=self.change
-                            )
-        self.scaleB.pack(side=LEFT)
-        self.entryB = Entry(self.frameR)
-        self.entryB.pack(side=LEFT)
+        self.scaleB = Scale(self.frameB, from_=0, to=255, 
+                            orient=HORIZONTAL, length=200, variable=self.varB)
+        self.scaleB.pack(side=LEFT, anchor = S)
+        self.entryB = Entry(self.frameB, width=4, textvariable=self.varB)
+        self.entryB.pack(side=LEFT, anchor = S)
+
+
+
 
         self.canvasMain = Canvas(
-            self, width=200, height=100, background="#000000")
+            self, width=256, height=100, background="#000000")
         self.canvasMain.pack()
+        self.canvasMain.bind("<Button -1>", self.clickHandler)
         self.entryMain = Entry(self,)
         self.entryMain.pack(side=LEFT)
 
@@ -60,7 +72,31 @@ class Application(tk.Tk):
         self.btn2 = tk.Button(self, text="Change", command=self.change)
         self.btn2.pack()
 
-    def change(self, event):
+        self.frameMem = Frame(self)
+        self.frameMem.pack()
+        self.canvasMem = []
+        for row in range(3):
+            for column in range (7):
+                canvas = Canvas(self.frameMem, width=50, height=50, background="#abcdef")
+                canvas.grid(row=row, column=column)
+                canvas.bind("<Button -1>", self.clickHandler)
+                self.canvasMem.append(canvas)
+
+
+    def clickHandler(self, event):
+        print(dir(event))
+        if self.cget("cursor") != "pencil":
+            self.config(cursor="pencil")
+            self.color = event.widget.cget("background")
+        elif self.cget("cursor") == "pencil":
+            self.config(cursor="")
+            event.widget.config(background=self.color)
+        if event.widget is self.canvasMain:
+            print("hlavni")
+        
+
+    def change(self, var, index, mode):
+        print(var,index, mode)
         r = self.scaleR.get()
         g = self.scaleG.get()
         b = self.scaleB.get()
@@ -69,17 +105,6 @@ class Application(tk.Tk):
         self.entryMain.delete(0, END)
         self.entryMain.insert(0, colorcode)
 
-
-        self.varR.set(r)
-        self.varG.set(g)
-        self.varB.set(b)
-
-        self.entryR.delete(0, END)
-        self.entryR.insert(0, str(r))
-        self.entryG.delete(0, END)
-        self.entryG.insert(0, str(g))
-        self.entryB.delete(0, END)
-        self.entryB.insert(0, str(b))
 
     def quit(self, event=None):
         super().quit()
