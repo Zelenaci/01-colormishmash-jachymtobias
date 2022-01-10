@@ -15,6 +15,8 @@ class Application(tk.Tk):
         self.title(self.name)
 
         self.bind("<Escape>", self.quit)  # klavesa esc spustí quit
+        self.protocol("WM_DELETE_WINDOW", self.quit)
+
 
         self.frameR = Frame(self)
         self.frameR.pack()
@@ -64,7 +66,7 @@ class Application(tk.Tk):
         self.canvasMain.pack()
         self.canvasMain.bind("<Button -1>", self.clickHandler)
         self.entryMain = Entry(self,)
-        self.entryMain.pack(side=LEFT)
+        self.entryMain.pack()
 
         self.btnQuit = tk.Button(self, text="Quit", command=self.quit)
         self.btnQuit.pack()
@@ -82,6 +84,7 @@ class Application(tk.Tk):
                 canvas.bind("<Button -1>", self.clickHandler)
                 self.canvasMem.append(canvas)
 
+        self.load()
 
     def clickHandler(self, event):
         print(dir(event))
@@ -97,16 +100,47 @@ class Application(tk.Tk):
 
     def change(self, var, index, mode):
         print(var,index, mode)
-        r = self.scaleR.get()
-        g = self.scaleG.get()
-        b = self.scaleB.get()
+        r = int(self.scaleR.get())
+        g = int(self.scaleG.get())
+        b = int(self.scaleB.get())
         colorcode =f"#{r:02x}{g:02x}{b:02x}"
         self.canvasMain.config(background=colorcode)
         self.entryMain.delete(0, END)
         self.entryMain.insert(0, colorcode)
 
 
+    def canvasMain2scales(self):
+        color = self.canvasMain.cget("background")
+        print(color)
+        r=int(color[1:3],16)
+        g=int(color[3:5],16)
+        b=int(color[5:],16)
+        self.varR.set(r)
+        self.varG.set(g)
+        self.varB.set(b)
+
+#uložení
+
+    def load(self):
+        try:
+            with open("paleta.txt", "r") as f:
+                color=f.readline().strip()
+                self.canvasMain.config(background=color)
+                self.canvasMain2scales()
+                for canvas in self.canvasMem:
+                    color=f.readline().strip()
+                    canvas.config(background=color)
+        except FileNotFoundError:
+            print("konfiguracni soubor se nepodarilo nacist")
+
+
+
     def quit(self, event=None):
+        with open("paleta.txt","w") as f:
+            f.write(self.canvasMain.cget("background")+"\n")
+            for canvas in self.canvasMem:
+                f.write(canvas.cget("background")+"\n")
+        print("konec")
         super().quit()
 
 
